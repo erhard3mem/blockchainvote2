@@ -534,7 +534,7 @@ function updateLoginFormAfterLogin(userId = '') {
 
 
     function fetchBc() {
-      fetch('http://localhost:3000/blockchain', {
+      fetch('/bc', {
                 method: 'GET'          
               })
             .then(response => response.json())

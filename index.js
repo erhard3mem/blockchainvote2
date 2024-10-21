@@ -500,8 +500,8 @@ app.post("/mineBlock", (req, res) => {
 });
 
 // Route to get the blockchain
-app.get("/blockchain", (req, res) => {
-  console.log('/blockchain called');
+app.get("/bc", (req, res) => {
+  console.log('/bc called');
   
   res.send({ chain: blockchain.chain, difficulty: blockchain.difficulty });
 });
