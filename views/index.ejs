@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blockchain Web Client</title>
+  <style>
+      body {
+        width: 1100px;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid;
+        padding: 30px;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      }
+      #result {
+        width:900px;
+        padding:20px;
+        border: 1px solid black;
+        margin:20px;
+        word-wrap: break-word;
+        font-size:18px;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      }
+      .hash {
+        font-size:8px;
+      }      
+      #votings li {
+        color:blue;
+      }
+      #votings li:hover {
+        cursor: pointer;
+      }
+      #stats {
+        width:900px;
+        padding:20px;
+        border: 1px solid violet;
+        margin:20px;
+        word-wrap: break-word;
+        font-size:18px;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      }
+      #options button {
+        margin:20px;
+      }
+      #status {
+        margin-left:auto;
+        margin-right:auto;
+        width:200px;
+        padding:40px;
+        border:1px solid red;
+        color:red;
+        font-weight:bold;
+      }
+      #pieContainer {
+        text-align: center;
+      }
+      #statusContainer {
+        float:right;
+      }
+  </style>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <div id="statusContainer">
+    <div id="status">Status info</div>
+  </div>
+  <h1 id="login">Login</h1>
+  <form id="loginForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username"><br><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password"><br><br>
+    <button type="submit">Login</button>
+  </form>
+  <form id="registerForm">
+    <button type="submit">Register</button>
+  </form>
+
+  <hr />
+  <form id="votingForm">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title"><br><br>
+    <label for="descr">Description:</label>
+    <input type="textarea" id="descr" name="descr"><br><br>
+    <button type="submit">New voting</button>
+  </form>
+  <hr />
+  <div id="votings">
+
+  </div>
+  <h3 id="selectedVoting"></h3>
+  <hr />
+  <form id="optionsForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name"><br><br>
+    <label for="descr">Description:</label>
+    <input type="textarea" id="descr" name="descr"><br><br>
+    <button type="submit">New option</button>
+  </form>
+  <hr />
+  <h3>Options:</h3>
+  <div id="options">
+
+  </div>
+  <hr />
+  <h1>Blockchain Web Client</h1>  
+  <div style="display:none">
+    <input type="text" id="data-input" placeholder="Enter data">
+    <button id="mine-button">Mine Block</button>
+    <button id="bc-button">Show Blockchain</button>
+  </div>
+  <div id="result"></div>
+  <hr />
+  <h3>Statistics</h3>
+  <div id="stats"></div>
+  <hr />
+  <div id="pieContainer">
+    <svg width="300" height="300"></svg>
+  </div>
+  <div class="tooltip"></div>
+
+  <script>
+
+  function status(msg) {
+    document.getElementById("status").innerText = msg;
+  }
+
+  function drawPie(data) {
+    // Sample data
+   // const data = [1, 20, 30, 40];
+
+   
+    // Set dimensions and radius of the pie chart
+    const width = 300, height = 300;
+    const radius = Math.min(width, height) / 2;
+
+    // Select the SVG element and create a group element for the pie chart
+    const svg = d3.select("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+    const tooltip = d3.select(".tooltip");
+
+    // Create the pie layout
+    const pie = d3.pie().value((d) => d.value);
+
+    // Create an arc generator
+    const arc = d3.arc()
+        .innerRadius(0) // Pie chart (no inner radius)
+        .outerRadius(radius);
+
+    // Generate pie chart slices
+    const slices = svg.selectAll("path")
+        .data(pie(data))
+        .enter()
+        .append("path")
+        .attr("d", arc)
+        .attr("fill", (d, i) => d3.schemeCategory10[i])
+        .on("mouseover", function(event, d) {
+                // Show the tooltip on hover
+                tooltip.style("display", "block")
+                    .html(`Value: ${d.data.label.name}`) // Show the data value
+                    .style("left", (event.pageX + 10) + "px") // Position the tooltip
+                    .style("top", (event.pageY - 20) + "px");
+            })
+            .on("mousemove", function(event) {
+                // Move the tooltip with the mouse
+                tooltip.style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 20) + "px");
+            })
+            .on("mouseout", function() {
+                // Hide the tooltip when not hovering
+                tooltip.style("display", "none");
+            });
+  }
+
+
+
+
+
+
+const votingForm = document.getElementById('votingForm');   
+const optionsForm = document.getElementById('optionsForm');   
+
+
+
+
+
+async function fetchVotings() {
+
+  const token = localStorage.token;
+
+  const votings = await fetch('/getVotings', {
+        method: 'GET',
+        headers: {
+           'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const votingsData = await votings.json()
+
+      const votingsDiv = document.getElementById("votings");
+      votingsDiv.innerHTML = '<ul>'
+      for(let i = 0; i < votingsData.length; i++) 
+      {
+        let id = votingsData[i].voting_id;
+        let createdAt = votingsData[i].created_at;
+        let description = votingsData[i].description;
+        let title = votingsData[i].title;
+        let startDate = votingsData[i].start_date;
+        let endDate = votingsData[i].end_date;
+
+        votingsDiv.innerHTML += `<li value="${id}">Created At: ${createdAt}, <span title="${description}">Title: "${title}"</span>, Start Date: ${startDate}, End Date: ${endDate}`
+      }
+      votingsDiv.innerHTML += '</ul>'
+
+      const listItems = document.querySelectorAll('#votings li');
+        // Add an onClick event listener to each <li>
+        listItems.forEach(item => {
+            item.addEventListener('click', (event) => {
+                let votingId = item.value;
+
+                document.getElementById("selectedVoting").value = votingId;
+                document.getElementById("selectedVoting").innerHTML = "<p>Selected Voting: <span style='font-size:40px'>"+votingId+"</span><p>";
+
+                fetchOptions();     
+                fetchBc();                          
+            });
+ 
+          });
+}
+
+async function vote(userId,vId,oId) {
+  const token = localStorage.token;
+  let result = '';
+  try {
+      const response = await fetch('/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   ,
+          'Authorization': `Bearer ${token}`
+        },
+        body: `userId=${userId}&votingId=${vId}`
+      });
+
+      const data = await response.json();
+      console.log("vote = ",data)
+
+      if(data.error === undefined){
+        mineOnBlockchain(vId + ':'+oId);
+        //alert('voting successfully mined')               
+        status('Voting successfully mined')
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      status('Voting only once allowed')
+      //alert('voting only once allowed')
+    }
+    return result;
+}
+
+async function getOptionName(oId) {
+  const token = localStorage.token;
+
+  const name = await fetch('/getOptionName', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   ,
+          'Authorization': `Bearer ${token}`
+        },
+        body: `oId=${oId}`
+  });
+
+  const optionsData = await name.json()
+
+  return optionsData;
+}
+
+async function fetchOptions() {
+
+  const token = localStorage.token;
+  const vId = document.getElementById("selectedVoting").value;
+
+  if(vId === undefined) return;
+
+  //console.log(vId)
+
+  const options = await fetch('/getOptions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   ,
+          'Authorization': `Bearer ${token}`
+        },
+        body: `votingId=${vId}`
+  });
+
+  const optionsData = await options.json()
+
+  //console.log("optionsData = ",optionsData)
+
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+  //optionsDiv.innerHTML = '<ul>'
+  for(let i = 0; i < optionsData.length; i++) 
+  {
+    let id = optionsData[i].option_id;
+    let name = optionsData[i].name;
+    let description = optionsData[i].description;      
+    optionsDiv.innerHTML += `<button value="${id}" title="${description}">${name}</button>`
+  }
+  //optionsDiv.innerHTML += '</ul>'
+
+  const buttons = document.querySelectorAll('#options button');
+    // Add an onClick event listener to each <li>
+      buttons.forEach(b => {
+        b.addEventListener('click', (event) => {
+            let oId = b.value;
+            // let vId = document.getElementById("selectedVoting").value;
+            let uId = document.getElementById("login").value;
+            
+            if(vId != undefined && vId != "") {
+              vote(uId,vId,oId);
+            }
+            else //alert('select a voting first');
+              status('Select a voting first');
+            console.log("# -> ", vId, oId)              
+        });
+
+      });
+}
+
+optionsForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const name = document.getElementById('name').value;
+  const descr = document.getElementById('descr').value;
+  const votingId = document.getElementById("selectedVoting").value;
+
+  const token = localStorage.token;
+
+  try {
+      const response = await fetch('/createOption', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   ,
+          'Authorization': `Bearer ${token}`
+        },
+        body: `name=${name}&description=${descr}&votingId=${votingId}`
+      });
+
+      fetchOptions();
+      
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Server error');
+    }
+});
+
+
+votingForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const title = document.getElementById('title').value;
+  const descr = document.getElementById('descr').value;
+
+  const token = localStorage.token;
+
+  try {
+      const response = await fetch('/createVoting', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   ,
+          'Authorization': `Bearer ${token}`
+        },
+        body: `title=${title}&description=${descr}`
+      });
+
+      fetchVotings();
+
+    } catch (error) {
+      console.error('Login error:', error);
+      //alert('Server error');
+      status('Server error')
+    }
+});
+
+
+function updateLoginFormAfterLogin(userId = '') {       
+    document.getElementById("loginForm").hidden = true;
+    document.getElementById("registerForm").hidden = true;
+    document.getElementById("login").innerText = 'Welcome, user '+userId+'!';
+    document.getElementById("login").value = userId;
+}
+
+
+  const loginForm = document.getElementById('loginForm');   
+
+
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   
+
+        },
+        body: `username=${username}&password=${password}`
+      });
+
+      if (response.ok) {
+        const data = await response.json();   
+
+        localStorage.setItem('token', data.token);
+       
+        auth();
+
+      } else {
+        //alert('Login failed');
+        status('Login failed')
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      //alert('Server error');
+      status('Server error')
+    }
+  });
+  
+  const registerForm = document.getElementById('registerForm');
+
+  registerForm.addEventListener('submit', async (event) => {
+    event.preventDefault();   
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      const response = await fetch('/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `username=${username}&password=${password}`   
+
+      });
+
+      if (response.ok) {
+        const data = await response.json();   
+        //alert('Registration successful')
+        status('Registration successful')
+        auth();
+      } else {
+        status('Registration failed')
+        //alert('Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      //alert('Server error');
+      status('Server error')
+    }
+  });
+
+    function showBc(data) {
+      try {
+        const stats = []
+        const resultDiv = document.getElementById('result');
+
+        resultDiv.innerHTML = "<ul>"
+        for(let i = 0; i<data.chain.length; i++) {
+          let index = data.chain[i].index
+          let ts = data.chain[i].timestamp
+          let dt = data.chain[i].data
+          let h = data.chain[i].hash
+
+          resultDiv.innerHTML = resultDiv.innerHTML + "<li>index = "+index+", timestamp = "+ts+", data = <b>"+dt+"</b>, hash = <span class=\"hash\">"+h+"</span></li>"
+
+          // stats creation:
+
+          let ids = dt.split(':')
+          let vId = ids[0]
+          let oId = ids[1]
+
+          if(vId === 'Genesis Block') continue;
+
+          let el = stats.find(item => item.voting === vId && item.option === oId);
+          if(!el) { stats.push({voting:vId,option:oId,count:1}) }
+          else {
+            el.count++;
+          }
+        }
+        resultDiv.innerHTML = resultDiv.innerHTML + "</ul>"
+
+
+        // stats creation 2:
+        const selectedVoting = document.getElementById("selectedVoting").value;
+        const statsDiv = document.getElementById("stats")
+        statsDiv.innerHTML = "<ul>"
+        for(let i = 0; i<stats.length; i++) {
+          let s = stats[i]
+          if(Number(s.voting) === Number(selectedVoting)) {
+            statsDiv.innerHTML += "<li>Voting ID: "+s.voting+", Option ID: "+s.option+ ", Counter: "+s.count+"</li>"
+          }
+        }
+        statsDiv.innerHTML += "</ul>"
+
+        // stats for current voting selection        
+        const pieData = []
+        document.getElementById("pieContainer").innerHTML='<svg width="300" height="300"></svg>'
+        if(selectedVoting !== undefined) {
+          for(let i = 0; i<stats.length; i++) {
+            let s = stats[i]
+            if(Number(s.voting) === Number(selectedVoting)) {
+              (getOptionName(s.option)).then(x => {
+                pieData.push({label:x,value:s.count})                
+                drawPie(pieData);
+              })
+            }
+          }          
+        }
+
+
+      }
+      catch(err) {
+        console.log(err)
+      }
+
+    }
+
+
+    function fetchBc() {
+      fetch('http://localhost:3000/blockchain', {
+                method: 'GET'          
+              })
+            .then(response => response.json())
+            .then(data => {
+              showBc(/*resultDiv,*/data)
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+    }
+
+    let latestUpdateTimestamp = 0;
+
+    const mineButton = document.getElementById('mine-button');
+    const bcButton = document.getElementById('bc-button');
+    const dataInput = document.getElementById('data-input');
+    const resultDiv = document.getElementById('result');
+
+    bcButton.addEventListener('click', () => {
+      fetchBc();
+    });
+
+    async function mineOnBlockchain(data) {
+      fetch('/mineBlock', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ data: data })
+      })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+
+            fetch('/sync', {
+                method: 'GET'          
+              })
+            .then(response => response.json())
+            .then(data => {
+              console.log(data)
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+
+
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+    }
+
+    mineButton.addEventListener('click', () => {
+      let data = dataInput.value;
+      mineOnBlockchain(data);
+    });
+    
+    
+
+    async function fetchUpdateEvery500ms() {
+      while (true) {
+        try {
+          const response = await fetch(`/syncTimestamp`);
+          const data = await response.json();
+          if(data.ts !== latestUpdateTimestamp) {
+            fetchBc();
+            latestUpdateTimestamp = data.ts;
+          }
+          
+          //console.log(data);
+        } catch (error) {
+          console.error('Error fetching data:', error);   
+
+        }
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+    
+    async function auth() {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const response = await fetch('/profile', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        if (response.status === 200) {
+          updateLoginFormAfterLogin(data.userId);
+          fetchVotings();
+          fetchOptions(); 
+        }   
+      }
+    }
+
+    auth();
+
+
+    fetchVotings();
+    
+    
+    fetchOptions();   
+    
+    
+    fetchUpdateEvery500ms();
+    
+</script>
+</body>
+</html>
