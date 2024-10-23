@@ -210,17 +210,18 @@ const db = new sqlite3.Database('main.db', (err) => {
 });
 
 // on start of index.js: delete all votes
-db.run(`DELETE FROM votes;`, (err) => {
+/*db.run(`DELETE FROM votes;`, (err) => {
 if (err) {
   console.error(err.message);
 }
-});
+});*/
  
  
 });
 
 /***********************************************************************************************/
 function initBlockchainFromDB(){
+  blockchain.chain = []
   try {
       (new Promise((resolve, reject) => {
       db_bc.all('SELECT * FROM bc', (err, rows) => {
@@ -234,7 +235,7 @@ function initBlockchainFromDB(){
       console.log(data)
       for(let i = data.length-1; i >= 0; i--) {
         let chainEl = JSON.parse(data[i].el)
-        
+        blockchain.chain.push(chainEl);        
       }
     }));
   } catch(err) {
@@ -243,7 +244,7 @@ function initBlockchainFromDB(){
 }
 
 // TODO: think about mechanism for 'saving' the blockchain in SQlite to survive restart of server
-//initBlockchainFromDB();
+initBlockchainFromDB();
 /***********************************************************************************************/
 
 // Middleware

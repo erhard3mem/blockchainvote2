@@ -705,11 +705,16 @@ function updateLoginFormAfterLogin(userId = '') {
     
 
     async function fetchUpdateEvery500ms() {
+      if(latestUpdateTimestamp==0) {
+        fetchBc();
+      }
       while (true) {
+        console.log("fetchUpdate...");
         try {
           const response = await fetch(`/syncTimestamp`);
           const data = await response.json();
           if(data.ts !== latestUpdateTimestamp) {
+            console.log("fetchBc()");
             fetchBc();
             latestUpdateTimestamp = data.ts;
           }
