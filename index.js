@@ -102,6 +102,8 @@ function mineBlock(data) {
   db_bc.run("DELETE FROM bc", (err) => {
     if (err) {
       console.error(err.message);
+    }else {
+      console.log('delete from BC successful');
     }
   });
 
@@ -110,6 +112,8 @@ function mineBlock(data) {
     db_bc.run("INSERT INTO bc (el) VALUES (?)", [JSON.stringify(el)], (err) => { 
       if (err) {
         console.error(err.message);
+      }else {
+        console.log('insert into BC successful');
       }
     });
   }
@@ -242,6 +246,10 @@ function initBlockchainFromDB(){
     console.log(err)
   }
 }
+
+// TODO: think about mechanism for 'saving' the blockchain in SQlite to survive restart of server
+initBlockchainFromDB();
+/***********************************************************************************************/
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
