@@ -145,6 +145,7 @@ const db_bc = new sqlite3.Database('bc.db', (err) => {
     if (err) {
       console.error(err.message);
     } else {
+      console.log("db_bc.run() without error")
       initBlockchainFromDB();
     }
   });
@@ -227,6 +228,7 @@ if (err) {
 
 /***********************************************************************************************/
 function initBlockchainFromDB(){
+  console.log("initBlockchainFromDB()");
   
   try {
       (new Promise((resolve, reject) => {
