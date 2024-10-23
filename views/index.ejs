@@ -173,11 +173,14 @@
     <input type="text" id="username" name="username">
     <label for="password">Password:</label>
     <input type="password" id="password" name="password">
-    <button type="submit">Login</button>
+    <button type="submit">Login</button>    
+  </form>
+  <form id="logoutForm" style="display:none">
+    <button type="submit">Logout</button>
   </form>
   <form id="registerForm">
     <button type="submit">Register</button>
-  </form>
+  </form>  
 
   <hr />
   <h3>Create a new voting and voting options:</h3>
@@ -497,8 +500,16 @@ function updateLoginFormAfterLogin(userId = '') {
     document.getElementById("login").innerText = 'Welcome, user '+userId+'!';
     document.getElementById("login").value = userId;
     status('Login successful');
+    document.getElementById("logoutForm").style= "display:block";
 }
 
+  const logoutForm = document.getElementById('logoutForm');   
+
+  logoutForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    localStorage.removeItem('token');
+    location.reload();
+  });
 
   const loginForm = document.getElementById('loginForm');   
 

@@ -243,10 +243,6 @@ function initBlockchainFromDB(){
   }
 }
 
-// TODO: think about mechanism for 'saving' the blockchain in SQlite to survive restart of server
-initBlockchainFromDB();
-/***********************************************************************************************/
-
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 
