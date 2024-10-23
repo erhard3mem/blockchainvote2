@@ -144,6 +144,8 @@ const db_bc = new sqlite3.Database('bc.db', (err) => {
   )`, (err) => {
     if (err) {
       console.error(err.message);
+    } else {
+      initBlockchainFromDB();
     }
   });
 
@@ -248,7 +250,7 @@ function initBlockchainFromDB(){
 }
 
 // TODO: think about mechanism for 'saving' the blockchain in SQlite to survive restart of server
-initBlockchainFromDB();
+//initBlockchainFromDB();
 /***********************************************************************************************/
 
 // Middleware
