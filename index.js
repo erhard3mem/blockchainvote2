@@ -227,7 +227,7 @@ if (err) {
 
 /***********************************************************************************************/
 function initBlockchainFromDB(){
-  blockchain.chain = []
+  
   try {
       (new Promise((resolve, reject) => {
       db_bc.all('SELECT * FROM bc', (err, rows) => {
@@ -238,10 +238,13 @@ function initBlockchainFromDB(){
         }
       });
     }).then(data => {
-      console.log(data)
-      for(let i = data.length-1; i >= 0; i--) {
-        let chainEl = JSON.parse(data[i].el)
-        blockchain.chain.push(chainEl);        
+      if(data.length>0) {
+        blockchain.chain = []
+        console.log("initBlockchainFromDB data = ",data)
+        for(let i = data.length-1; i >= 0; i--) {
+          let chainEl = JSON.parse(data[i].el)        
+          blockchain.chain.push(chainEl);        
+        }
       }
     }));
   } catch(err) {
