@@ -131,7 +131,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'bl0ckchainv0te'
 
 // think about: is this a good idea?
-const db_bc = new sqlite3.Database('bc.db', (err) => {
+const db_bc = new sqlite3.Database('/var/data/bc.db', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -152,7 +152,7 @@ const db_bc = new sqlite3.Database('bc.db', (err) => {
 
 });
 
-const db_user = new sqlite3.Database('user.db', (err) => {
+const db_user = new sqlite3.Database('/var/data/user.db', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -171,7 +171,7 @@ const db_user = new sqlite3.Database('user.db', (err) => {
 });
 
 // Database connection
-const db = new sqlite3.Database('main.db', (err) => {
+const db = new sqlite3.Database('/var/data/main.db', (err) => {
   if (err) {
     console.error(err.message);
   }
