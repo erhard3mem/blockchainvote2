@@ -604,6 +604,9 @@ function updateLoginFormAfterLogin(userId = '') {
         const resultDiv = document.getElementById('result');
         let firstHash = '', lastHash = ''
         resultDiv.innerHTML = "<ul>"
+
+        data.chain.sort((a,b) => a.index - b.index)
+        
         for(let i = 0; i<data.chain.length; i++) {
           let index = data.chain[i].index
           let ts = data.chain[i].timestamp
