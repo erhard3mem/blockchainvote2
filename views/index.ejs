@@ -466,8 +466,8 @@ optionsForm.addEventListener('submit', async (event) => {
 
       fetchOptions();
 
-      $("#optionsForm #name").html("")
-      $("#optionsForm #descr").html("")
+      $("#optionsForm #name").text("")
+      $("#optionsForm #descr").text("")
       
     } catch (error) {
       console.error('Login error:', error);
@@ -496,8 +496,8 @@ votingForm.addEventListener('submit', async (event) => {
 
       fetchVotings();
 
-      document.getElementById("title").innerText="";
-      document.getElementById("descr").innerText="";
+      $("#votingsForm #title").text("")
+      $("#votingsForm #descr").text("")
 
     } catch (error) {
       console.error('Login error:', error);
