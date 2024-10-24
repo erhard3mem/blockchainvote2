@@ -232,7 +232,7 @@ function initBlockchainFromDB(){
   
   try {
       (new Promise((resolve, reject) => {
-      db_bc.all('SELECT * FROM bc', (err, rows) => {
+      db_bc.all('SELECT * FROM bc ORDER BY id', (err, rows) => {
         if (err) {
           reject(err);  // Handle the error
         } else {
