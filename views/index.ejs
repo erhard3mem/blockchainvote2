@@ -676,6 +676,7 @@ function updateLoginFormAfterLogin(userId = '') {
               })
             .then(response => response.json())
             .then(data => {
+              console.log(data);
               showBc(/*resultDiv,*/data)
             })
             .catch(error => {
