@@ -162,6 +162,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Agdasima:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
   <div id="statusContainer">
@@ -464,6 +465,9 @@ optionsForm.addEventListener('submit', async (event) => {
       });
 
       fetchOptions();
+
+      $("#optionsForm #name").html("")
+      $("#optionsForm #descr").html("")
       
     } catch (error) {
       console.error('Login error:', error);
@@ -491,6 +495,9 @@ votingForm.addEventListener('submit', async (event) => {
       });
 
       fetchVotings();
+
+      document.getElementById("title").innerText="";
+      document.getElementById("descr").innerText="";
 
     } catch (error) {
       console.error('Login error:', error);
