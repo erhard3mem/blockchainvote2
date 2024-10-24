@@ -585,6 +585,7 @@ function updateLoginFormAfterLogin(userId = '') {
         const data = await response.json();   
         //alert('Registration successful')
         status('Registration successful')
+        $("#loginForm button").click();
         auth();
       } else {
         status('Registration failed')

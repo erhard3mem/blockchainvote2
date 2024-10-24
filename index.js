@@ -243,7 +243,7 @@ function initBlockchainFromDB(){
       if(data.length>0) {
         blockchain.chain = []
         console.log("initBlockchainFromDB data = ",data)
-        for(let i = data.length-1; i >= 0; i--) {
+        for(let i = 0; i < data.length; i++) {
           let chainEl = JSON.parse(data[i].el)        
           blockchain.chain.push(chainEl);        
         }
