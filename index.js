@@ -390,6 +390,23 @@ app.post('/isVotingFromAuthenticatedUser', authenticateToken, (req, res) => {
   }));
 });
 
+app.post('/getVotesCountForVoting', authenticateToken, (req, res) => {
+  
+  const voting = req.body.votingId;
+  
+  (new Promise((resolve, reject) => {
+    db.all('select count(*) as count from votes where voting_id = ?', [voting],(err, rows) => {
+      if (err) {
+        reject(err);  // Handle the error
+      } else {
+        resolve(rows);  // All rows are returned in an array
+      }
+    });
+  }).then(data => {
+    res.json( data )
+  }));
+});
+
 app.post('/deleteVoting', authenticateToken, (req, res) => {
   
   const voting = req.body.votingId;
