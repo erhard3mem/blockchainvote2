@@ -395,13 +395,12 @@ app.post('/deleteVoting', authenticateToken, (req, res) => {
   const voting = req.body.votingId;
   const user = req.user.userId;
 
-  //console.log("voting="+voting+" user="+user)
-  
   (new Promise((resolve, reject) => {
-    db.all('DELETE from votings WHERE voting_id = ? and user_id = ?', [voting,user],(err, rows) => {
+    db.run('DELETE from votings WHERE voting_id = ? and user_id = ? and (select count(*) from votes where voting_id = ?) = 0', [voting,user,voting],(err, rows) => {
       if (err) {
         reject(err);  // Handle the error
       } else {
+        console.log('success')
         resolve(rows);  // All rows are returned in an array
       }
     });
