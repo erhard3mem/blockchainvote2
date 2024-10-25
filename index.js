@@ -131,8 +131,8 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'bl0ckchainv0te'
 
 // think about: is this a good idea?
-const db_bc = new sqlite3.Database('/var/data/bc.db', (err) => {
-//const db_bc = new sqlite3.Database('bc.db', (err) => {
+//const db_bc = new sqlite3.Database('/var/data/bc.db', (err) => {
+const db_bc = new sqlite3.Database('bc.db', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -153,8 +153,8 @@ const db_bc = new sqlite3.Database('/var/data/bc.db', (err) => {
 
 });
 
-const db_user = new sqlite3.Database('/var/data/user.db', (err) => {
-//const db_user = new sqlite3.Database('user.db', (err) => {
+//const db_user = new sqlite3.Database('/var/data/user.db', (err) => {
+const db_user = new sqlite3.Database('user.db', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -173,8 +173,8 @@ const db_user = new sqlite3.Database('/var/data/user.db', (err) => {
 });
 
 // Database connection
-const db = new sqlite3.Database('/var/data/main.db', (err) => {
-//const db = new sqlite3.Database('main.db', (err) => {
+//const db = new sqlite3.Database('/var/data/main.db', (err) => {
+const db = new sqlite3.Database('main.db', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -199,7 +199,9 @@ const db = new sqlite3.Database('/var/data/main.db', (err) => {
       description TEXT,                               -- Description of the election
       start_date DATETIME NOT NULL,                   -- Start date of the election
       end_date DATETIME NOT NULL,                     -- End date of the election
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP   -- Timestamp when election was created
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,   -- Timestamp when election was created
+      user_id INTEGER NOT NULL, 
+      FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE   -- Delete votes if user is deleted
   )`, (err) => {
     if (err) {
       console.error(err.message);
@@ -370,14 +372,32 @@ app.get('/profile', authenticateToken, (req, res) => {
   res.json({ userId: req.user.userId });
 });
 
+app.post('/isVotingFromAuthenticatedUser', authenticateToken, (req, res) => {
+  
+  const usr = req.user.userId
+  const voting = req.body.votingId;
+  
+  (new Promise((resolve, reject) => {
+    db.all('SELECT * FROM votings WHERE voting_id = ? and user_id = ?', [voting,usr],(err, rows) => {
+      if (err) {
+        reject(err);  // Handle the error
+      } else {
+        resolve(rows);  // All rows are returned in an array
+      }
+    });
+  }).then(data => {
+    res.json( data )
+  }));
+});
+
 /*******************************************************************************/
 
 // Create voting
 app.post('/createVoting', authenticateToken, async (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, usrId } = req.body;
 
   try { 
-    db.run("INSERT INTO votings (title, description, start_date, end_date) VALUES (?, ?, datetime('now'), datetime('now', '+24 hours'))", [title, description], (err) => {
+    db.run("INSERT INTO votings (title, description, start_date, end_date, user_id) VALUES (?, ?, datetime('now'), datetime('now', '+24 hours'), ?)", [title, description, usrId], (err) => {
       if (err) {
         console.error('/createVoting error:', err);
         res.status(500).json({ error: 'Server error' });
