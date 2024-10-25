@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Blockchain Web Client</title>
+  <title>Free Online Voting Platform</title>
   <style>
       #bodyContainer {
         width: 1100px;
@@ -228,6 +228,7 @@
 
         </div>
         <h3 id="selectedVoting"></h3>
+        <form id="deleteVotingForm"><button type="submit">delete voting</button></form>
         <h3>Vote by choosing an options:</h3>
         <div id="options">
 
@@ -320,7 +321,28 @@ const optionsForm = document.getElementById('optionsForm');  
 votingForm.hidden = true;
 optionsForm.hidden = true;
 
+const delForm = document.getElementById('deleteVotingForm');
+delForm.hidden=true;
+delForm.addEventListener('submit', async (event) => {
+  const voting = delForm.value;
+  const token = localStorage.getItem("token");
 
+  const response = fetch('/deleteVoting', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'   ,
+                              'Authorization': `Bearer ${token}`
+                            },
+                            body: `votingId=${voting}`
+                        });
+
+  //response.then(data=>data.json()).then(data=>{debugger})
+
+              fetchVotings();
+
+               //debugger
+
+});
 
 async function fetchVotings() {
 
@@ -367,9 +389,12 @@ async function fetchVotings() {
                   .then(data => {
                     if(data.length>0){
                       optionsForm.hidden = false;
+                      $("#deleteVotingForm").val(votingId);
+                      delForm.hidden=false;
                     }    
                     else{
                       optionsForm.hidden = true;
+                      delForm.hidden=true;
                     }               
                   })
                   .catch(error => {
@@ -378,7 +403,7 @@ async function fetchVotings() {
 
                   document.getElementById("selectedVoting").value = votingId;
                   document.getElementById("selectedVoting").innerHTML = "<p>Selected Voting: <span style='font-size:40px'>"+votingId+"</span><p>";
-
+             
                   fetchOptions();     
                   fetchBc();  
                 
@@ -508,8 +533,8 @@ optionsForm.addEventListener('submit', async (event) => {
 
       fetchOptions();
 
-      $("#optionsForm #name").text("")
-      $("#optionsForm #descr").text("")
+      $("#optionsForm #name").val("")
+      $("#optionsForm #descr").val("")
       
     } catch (error) {
       console.error('Login error:', error);
@@ -538,8 +563,8 @@ votingForm.addEventListener('submit', async (event) => {
 
       fetchVotings();
 
-      $("#votingsForm #title").text("")
-      $("#votingsForm #descr").text("")
+      $("#votingForm #title").val("")
+      $("#votingForm #descr").val("")
 
     } catch (error) {
       console.error('Login error:', error);

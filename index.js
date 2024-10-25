@@ -131,8 +131,8 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'bl0ckchainv0te'
 
 // think about: is this a good idea?
-const db_bc = new sqlite3.Database('/var/data/bc.db', (err) => {
-//const db_bc = new sqlite3.Database('bc.db', (err) => {
+//const db_bc = new sqlite3.Database('/var/data/bc.db', (err) => {
+const db_bc = new sqlite3.Database('bc.db', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -153,8 +153,8 @@ const db_bc = new sqlite3.Database('/var/data/bc.db', (err) => {
 
 });
 
-const db_user = new sqlite3.Database('/var/data/user.db', (err) => {
-//const db_user = new sqlite3.Database('user.db', (err) => {
+//const db_user = new sqlite3.Database('/var/data/user.db', (err) => {
+const db_user = new sqlite3.Database('user.db', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -173,8 +173,8 @@ const db_user = new sqlite3.Database('/var/data/user.db', (err) => {
 });
 
 // Database connection
-const db = new sqlite3.Database('/var/data/main.db', (err) => {
-//const db = new sqlite3.Database('main.db', (err) => {
+//const db = new sqlite3.Database('/var/data/main.db', (err) => {
+const db = new sqlite3.Database('main.db', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -379,6 +379,26 @@ app.post('/isVotingFromAuthenticatedUser', authenticateToken, (req, res) => {
   
   (new Promise((resolve, reject) => {
     db.all('SELECT * FROM votings WHERE voting_id = ? and user_id = ?', [voting,usr],(err, rows) => {
+      if (err) {
+        reject(err);  // Handle the error
+      } else {
+        resolve(rows);  // All rows are returned in an array
+      }
+    });
+  }).then(data => {
+    res.json( data )
+  }));
+});
+
+app.post('/deleteVoting', authenticateToken, (req, res) => {
+  
+  const voting = req.body.votingId;
+  const user = req.user.userId;
+
+  //console.log("voting="+voting+" user="+user)
+  
+  (new Promise((resolve, reject) => {
+    db.all('DELETE from votings WHERE voting_id = ? and user_id = ?', [voting,user],(err, rows) => {
       if (err) {
         reject(err);  // Handle the error
       } else {
