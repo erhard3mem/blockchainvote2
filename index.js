@@ -12,6 +12,8 @@ const cors = require('cors');
 // Enable CORS with the specified origin
 app.use(cors());
 
+app.use(express.static('public'));
+
 let peers = []; // List of peer URLs
 
 // Block class
@@ -603,6 +605,11 @@ app.set('view engine', 'ejs');
 // Route to render the HTML page
 app.get('/', (req, res) => {
     res.render('index', { port: port });
+});
+
+// Route to render the HTML page
+app.get('/about', (req, res) => {
+  res.render('about', { port: port });
 });
 
 
