@@ -460,6 +460,7 @@ function updateLoginFormAfterLogin(userId = '') {
         localStorage.setItem('token', data.token);
        
         auth();
+        fetchBc();
 
       } else {
         //alert('Login failed');
@@ -496,6 +497,7 @@ function updateLoginFormAfterLogin(userId = '') {
         status('Registration successful')
         $("#loginForm button").click();
         auth();
+        fetchBc();
       } else {
         status('Registration failed')
         //alert('Registration failed');
@@ -523,8 +525,11 @@ function updateLoginFormAfterLogin(userId = '') {
           let h = data.chain[i].hash
           if(i===0) firstHash = h
           lastHash = h
-
-          resultDiv.innerHTML = resultDiv.innerHTML + "<li>index = "+index+", timestamp = "+ts+", data = <b>"+dt+"</b>, hash = <span class=\"hash\">"+h+"</span></li>"
+          /*const token =localStorage.getItem("token");
+          let dataContainerEl = "<span style='filter:blur(5px)'><b>"+dt+"</b></span>"
+          if(token && token.length>0) dataContainerEl = "<b>"+dt+"</b>"
+          resultDiv.innerHTML = resultDiv.innerHTML + "<li>index = "+index+", timestamp = "+ts+", data = "+dataContainerEl+", hash = <span class=\"hash\">"+h+"</span></li>"*/
+          resultDiv.innerHTML = resultDiv.innerHTML + "<li>index = "+index+", hash = <span class=\"hash\">"+h+"</span></li>"
 
           // stats creation:
 
