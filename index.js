@@ -373,14 +373,14 @@ const authenticateToken = (req, res, next) => {
 app.get('/profile', authenticateToken, (req, res) => {
   res.json({ userId: req.user.userId });
 });
-
+// rename...
 app.post('/isVotingFromAuthenticatedUser', authenticateToken, (req, res) => {
   
   const usr = req.user.userId
   const voting = req.body.votingId;
-  
+  //or (start_date > datetime("now") or end_date < datetime("now")))
   (new Promise((resolve, reject) => {
-    db.all('SELECT * FROM votings WHERE voting_id = ? and user_id = ?', [voting,usr],(err, rows) => {
+    db.all('SELECT * FROM votings WHERE voting_id = ? and (user_id = ? or ? = 1) and ((select count(*) from votes where voting_id = ?) = 0 or ? = 1)', [voting,usr,usr,voting,usr],(err, rows) => {
       if (err) {
         reject(err);  // Handle the error
       } else {
@@ -413,9 +413,9 @@ app.post('/deleteVoting', authenticateToken, (req, res) => {
   
   const voting = req.body.votingId;
   const user = req.user.userId;
-
+//or start_date > datetime("now") or end_date < datetime("now"))
   (new Promise((resolve, reject) => {
-    db.run('DELETE from votings WHERE voting_id = ? and user_id = ? and (select count(*) from votes where voting_id = ?) = 0', [voting,user,voting],(err, rows) => {
+    db.run('DELETE from votings WHERE voting_id = ? and (user_id = ? or ? = 1) and ((select count(*) from votes where voting_id = ?) = 0 or ? = 1)', [voting,user,user,voting,user],(err, rows) => {
       if (err) {
         reject(err);  // Handle the error
       } else {
@@ -432,10 +432,10 @@ app.post('/deleteVoting', authenticateToken, (req, res) => {
 
 // Create voting
 app.post('/createVoting', authenticateToken, async (req, res) => {
-  const { title, description, usrId } = req.body;
-
+  const { title, description, usrId, start, end } = req.body;
+  console.log(start,end);
   try { 
-    db.run("INSERT INTO votings (title, description, start_date, end_date, user_id) VALUES (?, ?, datetime('now'), datetime('now', '+24 hours'), ?)", [title, description, usrId], (err) => {
+    db.run("INSERT INTO votings (title, description, start_date, end_date, user_id) VALUES (?, ?, ?, ?, ?)", [title, description, start, end, usrId], (err) => {
       if (err) {
         console.error('/createVoting error:', err);
         res.status(500).json({ error: 'Server error' });

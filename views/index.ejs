@@ -41,7 +41,19 @@
           <input type="text" id="title" name="title"><br />
           <label for="descr">Voting Description:</label>
           <textarea id="descr" name="descr"></textarea>
-          <button type="submit">New voting</button>
+          <button type="submit">New voting</button><br /><br />
+          <label for="startdate">Start date/time:</label>
+          <input
+            type="datetime-local"
+            id="startdate"
+            name="startdate"
+            /><br /><br />
+            <label for="enddate">End date/time:</label>
+            <input
+              type="datetime-local"
+              id="enddate"
+              name="enddate"
+              />
         </form>
         <form id="optionsForm">
           <label for="name">Option Name:</label>
@@ -198,7 +210,12 @@ async function fetchVotings() {
         let startDate = votingsData[i].start_date;
         let endDate = votingsData[i].end_date;
 
-        votingsDiv.innerHTML += `<li value="${id}">Created At: ${createdAt}, <span title="${description}">Title: <b>"${title}"</b></span>`
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+
+        start.to
+
+        votingsDiv.innerHTML += `<li value="${id}">Created At: ${createdAt}, <span title="${description}">Title: <b>"${title}"</b></span>, from: ${start.toDateString()} ${start.getHours()}:${start.getMinutes()} to: ${end.toDateString()} ${end.getHours()}:${end.getMinutes()}`
       }
       votingsDiv.innerHTML += '</ul>'
 
@@ -217,11 +234,12 @@ async function fetchVotings() {
                   body: `votingId=${votingId}`
                 }).then(response => response.json())
                   .then(data => {
+                    
                     if(data.length>0){
                       optionsForm.hidden = false;
                       $("#deleteVotingForm").val(votingId);
-                      
-                      const response = fetch('/getVotesCountForVoting', {
+                      delForm.hidden=false;
+                      /*const response = fetch('/getVotesCountForVoting', {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/x-www-form-urlencoded'   ,
@@ -231,7 +249,7 @@ async function fetchVotings() {
                       }).then(response => response.json())
                         .then(data => {                        
                           if(data.length>0&&data[0].count == 0) delForm.hidden=false;
-                        });
+                        });*/
                       
                     }    
                     else{
@@ -321,37 +339,56 @@ async function fetchOptions() {
 
   const optionsData = await options.json()
 
-  //console.log("optionsData = ",optionsData)
+  const voting = await fetch('/isVotingFromAuthenticatedUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   ,
+          'Authorization': `Bearer ${token}`
+        },
+        body: `votingId=${vId}`
+  });
 
-  const optionsDiv = document.getElementById("options");
-  optionsDiv.innerHTML = "";
-  //optionsDiv.innerHTML = '<ul>'
-  for(let i = 0; i < optionsData.length; i++) 
-  {
-    let id = optionsData[i].option_id;
-    let name = optionsData[i].name;
-    let description = optionsData[i].description;      
-    optionsDiv.innerHTML += `<button value="${id}" title="${description}">${name}</button>`
-  }
-  //optionsDiv.innerHTML += '</ul>'
+  const votingData = await voting.json()
 
-  const buttons = document.querySelectorAll('#options button');
-    // Add an onClick event listener to each <li>
-      buttons.forEach(b => {
-        b.addEventListener('click', (event) => {
-            let oId = b.value;
-            // let vId = document.getElementById("selectedVoting").value;
-            let uId = document.getElementById("login").value;
-            
-            if(vId != undefined && vId != "") {
-              vote(uId,vId,oId);
-            }
-            else //alert('select a voting first');
-              status('Select a voting first');
-            console.log("# -> ", vId, oId)              
+  const start = new Date(votingData[0].start_date)
+  const end = new Date(votingData[0].end_date)
+
+  const now = new Date()
+
+  if(start < now && end > now) {
+
+    //console.log("optionsData = ",optionsData)
+
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
+    //optionsDiv.innerHTML = '<ul>'
+    for(let i = 0; i < optionsData.length; i++) 
+    {
+      let id = optionsData[i].option_id;
+      let name = optionsData[i].name;
+      let description = optionsData[i].description;      
+      optionsDiv.innerHTML += `<button value="${id}" title="${description}">${name}</button>`
+    }
+    //optionsDiv.innerHTML += '</ul>'
+
+    const buttons = document.querySelectorAll('#options button');
+      // Add an onClick event listener to each <li>
+        buttons.forEach(b => {
+          b.addEventListener('click', (event) => {
+              let oId = b.value;
+              // let vId = document.getElementById("selectedVoting").value;
+              let uId = document.getElementById("login").value;
+              
+              if(vId != undefined && vId != "") {
+                vote(uId,vId,oId);
+              }
+              else //alert('select a voting first');
+                status('Select a voting first');
+              console.log("# -> ", vId, oId)              
+          });
+
         });
-
-      });
+  }
 }
 
 optionsForm.addEventListener('submit', async (event) => {
@@ -391,6 +428,12 @@ votingForm.addEventListener('submit', async (event) => {
   const title = document.getElementById('title').value;
   const descr = document.getElementById('descr').value;
 
+  let start = document.getElementById('startdate').value;
+  let end = document.getElementById('enddate').value;
+
+  if(start == "") start = new Date();
+  if(end == "") end = new Date();
+
   const token = localStorage.token;
 
   try {
@@ -400,7 +443,7 @@ votingForm.addEventListener('submit', async (event) => {
           'Content-Type': 'application/x-www-form-urlencoded'   ,
           'Authorization': `Bearer ${token}`
         },
-        body: `title=${title}&description=${descr}&usrId=${document._dataUserId}`
+        body: `title=${title}&description=${descr}&usrId=${document._dataUserId}&start=${start}&end=${end}`
       });
 
       fetchVotings();
