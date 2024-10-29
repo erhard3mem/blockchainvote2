@@ -389,6 +389,11 @@ async function fetchOptions() {
 
         });
   }
+  else {
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "<span style='color:red'>Voting period ended</span>";
+    status("You selected a finished voting")
+  }
 }
 
 optionsForm.addEventListener('submit', async (event) => {
