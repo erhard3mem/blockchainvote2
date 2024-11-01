@@ -11,88 +11,88 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-  <div id="bodyContainer">
-     
-      <div id="main">
-        <h2 id="header"><a href="/about">Free Online 🌐 Voting Platform</a></h2>
-        <div id="statusContainer">
-            <div id="status"></div>
-        </div>
-        <form id="logoutForm" style="display:none">
-          <button type="submit">Logout</button>
-        </form>
-          <h1 id="login">Login</h1>
-          <form id="loginForm">
-              <label for="username">Username:</label>
-              <input type="text" id="username" name="username">
-              <label for="password">Password:</label>
-              <input type="password" id="password" name="password">
-              <button type="submit">Login</button>
-          </form>
-          <form id="registerForm">
-              <button type="submit">Register</button>
-          </form>
-          <hr style="margin:20px 0px;"/>
-          <div id="control">
-              <h3>Create a new voting options:</h3>
-              <form id="votingForm">
-                  <label for="title">Voting Title:</label>
-                  <input type="text" id="title" name="title">
-                  <label for="descr">Voting Description:</label>
-                  <textarea id="descr" name="descr"></textarea>                  
-                  <label for="startdate">Start date/time:</label>
-                  <input type="datetime-local" id="startdate" name="startdate" />
-                  <label for="enddate">End date/time:</label>
-                  <input type="datetime-local" id="enddate" name="enddate" />
-                  <button type="submit">New voting</button>
-              </form>
-              <form id="optionsForm">
-                  <label for="name">Option Name:</label>
-                  <input type="text" id="name" name="name">
-                  <label for="descr">Option Description:</label>
-                  <textarea id="descr" name="descr"></textarea>
-                  <button type="submit">New option</button>
-                  <button type="submit" id="cancel">Cancel</button>
-              </form>
-                            
-
-              <h3 id="selectedVoting"></h3>
-
-
-              <!-- Parallel Container -->
-              <div id="votingContainer">
-                  <div id="votingSection">
-                      <h3>Select from a voting:</h3>
-                      <div id="votings"></div>
-                      <form id="deleteVotingForm">
-                          <button type="submit" title="It is only possible to delete votings without votes">delete voting</button>
-                      </form>
-                  </div>
-                  
-                  <div id="optionsSection">
-                      <h3>Vote by choosing an options:</h3>
-                      <div id="options"></div>
-                  </div>
-              </div>
-          </div>
-    </div>
-    <div id="main2">
-          <h1>Blockchain</h1>
-          <div style="display:none">
-              <input type="text" id="data-input" placeholder="Enter data">
-              <button id="mine-button">Mine Block</button>
-              <button id="bc-button">Show Blockchain</button>
-          </div>
-          <div id="result"></div>
-          <div id="stats"></div>
-          <div class="tooltip" style="position:absolute"></div>
-          <div id="pieContainer">
-              <svg width="300" height="300"></svg>
-          </div>
-      </div>
-    </div>
   
+  <div id="bodyContainer">
+      <h2 id="header"><a href="/about">⛓️ Free Online 🌐 Voting Platform</a></h2>
+      <div id="statusContainer">
+        <div id="status"></div>
+      </div>
+      <div id="main">
+      <h1 id="login">Login</h1>
+      <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+        <button type="submit">Login</button>    
+      </form>
+      <form id="logoutForm" style="display:none">
+        <button type="submit">Logout</button>
+      </form>
+      <form id="registerForm">
+        <button type="submit">Register</button>
+      </form>  
 
+      <hr />
+      <div id="control">
+        <h3>Create a new voting and voting options:</h3>
+        <form id="votingForm">
+          <label for="title">Voting Title:</label>
+          <input type="text" id="title" name="title"><br />
+          <label for="descr">Voting Description:</label>
+          <textarea id="descr" name="descr"></textarea>
+          <button type="submit">New voting</button><br /><br />
+          <label for="startdate">Start date/time:</label>
+          <input
+            type="datetime-local"
+            id="startdate"
+            name="startdate"
+            /><br /><br />
+            <label for="enddate">End date/time:</label>
+            <input
+              type="datetime-local"
+              id="enddate"
+              name="enddate"
+              />
+        </form>
+        <form id="optionsForm">
+          <label for="name">Option Name:</label>
+          <input type="text" id="name" name="name">
+          <label for="descr">Option Description:</label>
+          <textarea id="descr" name="descr"></textarea>
+          <button type="submit">New option</button>
+        </form>
+        <hr style="clear:both" />
+        <h3>Select from a voting:</h3>
+        <div id="votings">
+
+        </div>
+        <h3 id="selectedVoting"></h3>
+        <form id="deleteVotingForm"><button type="submit" title="It is only possible to delete votings without votes">delete voting</button></form>
+        <h3>Vote by choosing an options:</h3>
+        <div id="options">
+
+        </div>
+        <hr />
+      </div>
+      <h1>Blockchain</h1>  
+      <div style="display:none">
+        <input type="text" id="data-input" placeholder="Enter data">
+        <button id="mine-button">Mine Block</button>
+        <button id="bc-button">Show Blockchain</button>
+      </div>
+      <div id="result"></div>
+      <h3>Statistics</h3>
+      <div id="stats"></div>
+      <hr />
+      <div class="tooltip" style="position:absolute"></div>
+      <div id="pieContainer">
+        
+        <svg width="300" height="300"></svg>
+      </div>
+      
+    </div>
+  </div>
   <script>
 
   function status(msg) {
@@ -103,6 +103,7 @@
   function drawPie(data) {
     // Sample data
    // const data = [1, 20, 30, 40];
+
    
     // Set dimensions and radius of the pie chart
     const width = 300, height = 300;
@@ -199,8 +200,7 @@ async function fetchVotings() {
       const votingsData = await votings.json()
 
       const votingsDiv = document.getElementById("votings");
-      //votingsDiv.innerHTML = '<ul>'
-      votingsDiv.innerHTML = '';
+      votingsDiv.innerHTML = '<ul>'
       for(let i = 0; i < votingsData.length; i++) 
       {
         let id = votingsData[i].voting_id;
@@ -213,18 +213,16 @@ async function fetchVotings() {
         let start = new Date(startDate);
         let end = new Date(endDate);
 
-        //votingsDiv.innerHTML += `<li value="${id}">Created At: ${createdAt}, <span title="${description}">Title: <b>"${title}"</b></span>, from: ${start.toDateString()} ${start.getHours()}:${start.getMinutes()} to: ${end.toDateString()} ${end.getHours()}:${end.getMinutes()}`
-          votingsDiv.innerHTML += `<button value="${id}" from="${start.toDateString()} ${start.getHours()}:${start.getMinutes()}" to="${end.toDateString()} ${end.getHours()}:${end.getMinutes()}">${title}</button>`
-      }
-      //votingsDiv.innerHTML += '</ul>'
+        start.to
 
-      const listItems = document.querySelectorAll('#votings button');
+        votingsDiv.innerHTML += `<li value="${id}">Created At: ${createdAt}, <span title="${description}">Title: <b>"${title}"</b></span>, from: ${start.toDateString()} ${start.getHours()}:${start.getMinutes()} to: ${end.toDateString()} ${end.getHours()}:${end.getMinutes()}`
+      }
+      votingsDiv.innerHTML += '</ul>'
+
+      const listItems = document.querySelectorAll('#votings li');
         // Add an onClick event listener to each <li>
         listItems.forEach(item => {
             item.addEventListener('click', (event) => {
-                $("#votingForm").css("display","none");
-                $("#optionsForm").css("display","block");
-
                 let votingId = item.value;
 
                 const response = fetch('/isVotingFromAuthenticatedUser', {
@@ -264,7 +262,7 @@ async function fetchVotings() {
                   });
 
                   document.getElementById("selectedVoting").value = votingId;
-                  document.getElementById("selectedVoting").innerHTML = "<p>Selected Voting: <span style='font-size:40px'>"+votingId+"</span></p><p style='font-size:12px'>"+$(item).attr("from")+" - "+$(item).attr("to")+"</p>";
+                  document.getElementById("selectedVoting").innerHTML = "<p>Selected Voting: <span style='font-size:40px'>"+votingId+"</span><p>";
              
                   fetchOptions();     
                   fetchBc();  
@@ -352,16 +350,12 @@ async function fetchOptions() {
 
   const votingData = await voting.json()
 
-  /************ it seems there is a bug in this code: **************/
+  const start = new Date(votingData[0].start_date)
+  const end = new Date(votingData[0].end_date)
 
-  let start, end, now;
-  if(votingData.length>0) {
-    start = new Date(votingData[0].start_date)
-    end = new Date(votingData[0].end_date)
-    now = new Date()
-  }  
+  const now = new Date()
 
-  if(start == undefined || start < now && end > now) {
+  if(start < now && end > now) {
 
     //console.log("optionsData = ",optionsData)
 
@@ -404,12 +398,6 @@ async function fetchOptions() {
 
 optionsForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-
-  if(event.submitter.id == 'cancel') {
-    $("#optionsForm").css("display","none");
-    $("#votingForm").css("display","block");
-    $("#selectedVoting").html("");
-  }
 
   const name = document.getElementById('name').value;
   const descr = document.getElementById('descr').value;
@@ -589,8 +577,7 @@ function updateLoginFormAfterLogin(userId = '') {
           let dataContainerEl = "<span style='filter:blur(5px)'><b>"+dt+"</b></span>"
           if(token && token.length>0) dataContainerEl = "<b>"+dt+"</b>"
           resultDiv.innerHTML = resultDiv.innerHTML + "<li>index = "+index+", timestamp = "+ts+", data = "+dataContainerEl+", hash = <span class=\"hash\">"+h+"</span></li>"*/
-          if(index==0) resultDiv.innerHTML = resultDiv.innerHTML + "<li>index = "+index+", hash = <span class=\"hash\">"+h+"</span></li>"
-          else if(index==data.chain.length-1) resultDiv.innerHTML = resultDiv.innerHTML + "<li>index = "+index+", hash = <span class=\"hash\">"+h+"</span></li>"          
+          resultDiv.innerHTML = resultDiv.innerHTML + "<li>index = "+index+", hash = <span class=\"hash\">"+h+"</span></li>"
 
           // stats creation:
 
@@ -607,8 +594,8 @@ function updateLoginFormAfterLogin(userId = '') {
           }
         }        
         resultDiv.innerHTML = resultDiv.innerHTML + "</ul>"
-        //resultDiv.innerHTML = '<p id="firstHash">first hash: '+firstHash+'</p><hr />'+resultDiv.innerHTML;
-        //resultDiv.innerHTML = resultDiv.innerHTML+'<hr /><p id="lastHash">last hash: '+lastHash+'</p>';
+        resultDiv.innerHTML = '<p id="firstHash">first hash: '+firstHash+'</p><hr />'+resultDiv.innerHTML;
+        resultDiv.innerHTML = resultDiv.innerHTML+'<hr /><p id="lastHash">last hash: '+lastHash+'</p>';
 
 
 
